@@ -88,13 +88,31 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   }
   if (isValid(username)) {
     //return res.send(req.session.authorization);
-    books[isbn]["reviews"][username] = review;
+    books[isbn]["reviews"][username] = {"review": review};
     return res.send(books[isbn])
   }
   //return res.send(req.session)
   //return res.send(books[1]);
   //return res.status(300).json({message: "Yet to be implemented auth review"});
 });
+
+// Delete a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    //Write your code here
+    const username = req.session.authorization["username"];
+    const isbn = req.params.isbn;
+
+    if (!username || !isbn) {
+        return res.status(404).json({ message: "Body empty" });
+    }
+    if (isValid(username)) {
+      delete books[isbn]["reviews"][username];
+      return res.send(books[isbn])
+    }
+    //return res.send(req.session)
+    //return res.send(books[1]);
+    //return res.status(300).json({message: "Yet to be implemented auth review"});
+  });
 
 // Check username
 regd_users.get("/checkusername", (req, res) => {
