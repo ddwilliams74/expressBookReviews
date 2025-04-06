@@ -59,14 +59,31 @@ regd_users.post("/login", (req,res) => {
     }
 });
 
+function stringify(obj) {
+  let cache = [];
+  let str = JSON.stringify(obj, function(key, value) {
+    if (typeof value === "object" && value !== null) {
+      if (cache.indexOf(value) !== -1) {
+        // Circular reference found, discard key
+        return;
+      }
+      // Store value in our collection
+      cache.push(value);
+    }
+    return value;
+  });
+  cache = null; // reset the cache
+  return str;
+}
+
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
   const username = req.body.username;
   const password = req.body.password;
   const isbn = req.params.isbn;
-  const review = req.params.review; 
-  return res.send(req);
+  const review = req.query.review; 
+  res.send(stringify(req));
   if (!username || !password || !review || !isbn) {
       return res.status(404).json({ message: "Body empty" });
   }
