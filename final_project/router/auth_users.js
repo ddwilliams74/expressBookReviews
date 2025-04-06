@@ -30,7 +30,7 @@ const authenticatedUser = (username,password)=>{ //returns boolean
     if (validusers.length > 0) {
         return true;
     } else {
-        return false;ß
+        return false;
     }
 }
 
@@ -79,23 +79,33 @@ function stringify(obj) {
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
   //Write your code here
-  const username = req.body.username;
-  const password = req.body.password;
+  const username = req.session.authorization["username"];
   const isbn = req.params.isbn;
   const review = req.query.review; 
-  res.send(stringify(req));
-  if (!username || !password || !review || !isbn) {
+  //res.send(stringify(req));
+  if (!username || !review || !isbn) {
       return res.status(404).json({ message: "Body empty" });
   }
-  if (authenticatedUser(username, password)) {
+  if (isValid(username)) {
     //return res.send(req.session.authorization);
     books[isbn]["reviews"][username] = review;
-    return res.send(books[isbn]["reviews"][username])
+    return res.send(books[isbn])
   }
-  return res.send(req.session)
-  return res.send(books[1]);
-  return res.status(300).json({message: "Yet to be implemented auth review"});
+  //return res.send(req.session)
+  //return res.send(books[1]);
+  //return res.status(300).json({message: "Yet to be implemented auth review"});
 });
+
+// Check username
+regd_users.get("/checkusername", (req, res) => {
+    //Write your code here
+    const username = req.session.authorization["username"];
+    return res.send(username)
+    //return res.send(req.session)
+    //return res.send(books[1]);
+    //return res.status(300).json({message: "Yet to be implemented auth review"});
+  });
+
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
